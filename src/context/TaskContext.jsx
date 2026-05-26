@@ -120,6 +120,8 @@ export const TaskProvider = ({ children }) => {
     // Regla de negocio: Si no está en "Done" (column-4), no puede estar aprobada
     if (destination.droppableId !== 'column-4') {
       updatedTask.isApproved = false;
+      updatedTask.approvalDate = null;
+      updatedTask.isLate = false;
     }
 
     setData({
@@ -191,14 +193,16 @@ export const TaskProvider = ({ children }) => {
       alert("La tarea debe estar en 'Review' para ser aprobada.");
       return;
     }
-    
-    const currentColumnId = task.status;
-    const doneColumnId = 'column-4';
 
-    if (currentColumnId === doneColumnId) {
-      updateTask(taskId, { isApproved: true });
-      return;
-    }
+    const today = new Date().toISOString().split('T')[0];
+    // Si no había fecha fin estipulada, la ponemos ahora
+    const resolvedEndDate = task.endDate || today;
+    // Comparamos: si la fecha de aprobación (today) supera la estipulada → tarde
+    const isLate = task.endDate ? today > task.endDate : false;
+    const approvalDate = today;
+
+    const currentColumnId = 'column-3';
+    const doneColumnId = 'column-4';
 
     setData((prev) => {
       const startColumn = prev.columns[currentColumnId];
@@ -211,7 +215,14 @@ export const TaskProvider = ({ children }) => {
         ...prev,
         tasks: {
           ...prev.tasks,
-          [taskId]: { ...prev.tasks[taskId], isApproved: true, status: doneColumnId },
+          [taskId]: {
+            ...prev.tasks[taskId],
+            isApproved: true,
+            status: doneColumnId,
+            endDate: resolvedEndDate,
+            approvalDate,
+            isLate,
+          },
         },
         columns: {
           ...prev.columns,

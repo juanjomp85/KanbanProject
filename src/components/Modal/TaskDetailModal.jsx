@@ -207,15 +207,49 @@ const TaskDetailModal = ({ task, onClose }) => {
               </div>
 
               <div className="input-group">
-                <label className="input-label">Fecha Fin</label>
+                <label className="input-label">Fecha Fin Planificada</label>
                 <input
                   type="date"
                   name="endDate"
                   value={formData.endDate}
                   onChange={handleChange}
                   className="input-field"
+                  disabled={formData.isApproved}
+                  style={formData.isApproved ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                 />
               </div>
+
+              {formData.isApproved && formData.approvalDate && (
+                <div className="input-group">
+                  <label className="input-label">Fecha de Aprobación</label>
+                  <div style={{
+                    padding: '12px 16px',
+                    borderRadius: 8,
+                    border: `2px solid ${formData.isLate ? '#f2b8b5' : '#93dbac'}`,
+                    backgroundColor: formData.isLate
+                      ? 'rgba(242,184,181,0.08)'
+                      : 'rgba(147,219,172,0.08)',
+                    color: formData.isLate ? '#f2b8b5' : '#93dbac',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    fontWeight: 500,
+                    fontSize: '0.9375rem',
+                  }}>
+                    <span style={{ fontSize: '1.1rem' }}>{formData.isLate ? '⚠️' : '✅'}</span>
+                    <div>
+                      <div>{formData.approvalDate}</div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 400, marginTop: 2, opacity: 0.85 }}>
+                        {formData.isLate
+                          ? `Fuera de plazo (planificado: ${formData.endDate})`
+                          : formData.endDate && formData.endDate !== formData.approvalDate
+                            ? `En plazo (planificado: ${formData.endDate})`
+                            : 'Entregado en la fecha planificada'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             
             <div className="modal-panel">

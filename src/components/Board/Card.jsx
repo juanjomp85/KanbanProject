@@ -40,12 +40,20 @@ const Card = ({ task, index, onOpenDetail, isSearchActive }) => {
           <h4 className="card-title">{task.title}</h4>
           
           <div className="card-footer">
-            {task.endDate && (
+            {task.isApproved && task.approvalDate ? (
+              <div className="card-footer-item" style={{ color: task.isLate ? '#f2b8b5' : '#93dbac', fontWeight: 500 }}>
+                <Calendar size={14} />
+                <span title={task.isLate ? 'Entregado fuera de plazo' : 'Entregado en plazo'}>
+                  {format(new Date(task.approvalDate), 'MMM d')}
+                  {task.isLate ? ' ⚠' : ' ✓'}
+                </span>
+              </div>
+            ) : task.endDate ? (
               <div className="card-footer-item">
                 <Calendar size={14} />
                 <span>{format(new Date(task.endDate), 'MMM d')}</span>
               </div>
-            )}
+            ) : null}
             
             <div className="card-footer-item">
               <User size={14} />
